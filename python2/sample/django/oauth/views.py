@@ -1,9 +1,11 @@
+import time
 from evernote.api.client import EvernoteClient
 from evernote.api.client import NoteStore
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
+from datetime import datetime
 # rename config.py.template to config.py and paste your credentials. 
 from config import EN_CONSUMER_KEY, EN_CONSUMER_SECRET
 
@@ -15,28 +17,28 @@ def read_request_token_from_file(file_path='request_token.txt'):
     return oauth_token, oauth_token_secret
 
 # Seems like this only get 128 notes.
-def getAllNotes(authToken, noteStore, maxCount=None):
+def getAllNotes(authToken, noteStore, searchTerm , maxCount=None):
 	noteFilter = NoteStore.NoteFilter()
-	noteFilter.words = "*"
-	sharedNotes = []
+	noteFilter.words = "intitle:" + searchTerm
+	notes = []
 	offset = 0
 	if not maxCount:
 		maxCount = 500
-	while len(sharedNotes) < maxCount:
+	while len(notes) < maxCount:
 		try:
 			noteList = noteStore.findNotes(authToken, noteFilter, offset, 50)
-			sharedNotes += noteList.notes
+			notes += noteList.notes
 		except (EDAMNotFoundException, EDAMSystemException, EDAMUserException), e:
 			print "Error getting shared notes:"
 			print type(e), e
 			return None
 
-		if len(sharedNotes) % 50 != 0:
+		if len(notes) % 50 != 0:
 			## We've retrieved all of the notes 
 			break
 		else:
 			offset += 50
-	return sharedNotes[:maxCount]
+	return notes[:maxCount]
 
 
 def get_evernote_client(token=None):
@@ -97,8 +99,27 @@ def callback(request):
 
     note_store = client.get_note_store()
     notebooks = note_store.listNotebooks()
-    notes = getAllNotes(access_token, note_store)
+    
+
+    # Get the current date and time
+    now = datetime.now()
+
+    # Format the date as mm-dd-yy
+    formatted_date = now.strftime("%m-%d-%y")
+    notes = getAllNotes(access_token, note_store, formatted_date)
+    note = notes[0]
+    content = note_store.getNoteContent(access_token, notes[0].guid)
+    with open('note.html', 'w') as f:
+        f.write(content.encode('utf-8'))
+    
+    print(notes[0])
+    print(content)
+    time.sleep(60)
     import pdb; pdb.set_trace()
+    with open('note.html', 'r') as f:
+        new_content = f.read()
+    note.content = new_content
+    note_store.updateNote(access_token, note)
 
     return render_to_response('oauth/callback.html', {'notebooks': notebooks})
 
