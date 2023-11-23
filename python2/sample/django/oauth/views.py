@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from datetime import datetime
 # rename config.py.template to config.py and paste your credentials. 
 from config import EN_CONSUMER_KEY, EN_CONSUMER_SECRET
-
+# There are pdf files in: /home/root/.local/share/remarkable/xochitl/
 def read_request_token_from_file(file_path='request_token.txt'):
     with open(file_path, 'r') as f:
         oauth_token = f.readline().strip()
