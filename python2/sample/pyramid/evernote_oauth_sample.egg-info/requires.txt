@@ -1,5 +1,0 @@
-pyramid
-pyramid_debugtoolbar
-waitress
-oauth2
-evernote

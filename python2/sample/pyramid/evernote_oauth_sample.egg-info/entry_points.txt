@@ -1,3 +1,0 @@
-      [paste.app_factory]
-      main = evernote_oauth_sample:main
-      

@@ -80,13 +80,16 @@ def callback(request):
         # Make sure session tokens and saved tokens match
         assert saved_oauth_token == request.session['oauth_token']
         assert saved_oauth_token_secret == request.session['oauth_token_secret']
-        
+        print(saved_oauth_token)
+        print(saved_oauth_token_secret)
+
         client = get_evernote_client()
         access_token = client.get_access_token(
             saved_oauth_token,
             saved_oauth_token_secret,
             request.GET.get('oauth_verifier', '')
         )
+        print(access_token)
     except (KeyError, AssertionError):
         return redirect('/')
 
