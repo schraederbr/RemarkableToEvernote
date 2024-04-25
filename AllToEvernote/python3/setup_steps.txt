@@ -1,0 +1,9 @@
+sudo snap install google-cloud-cli
+gcloud init
+gcloud auth application-default login
+
+sudo apt install python2
+sudo apt install python-pip
+pip2 install evernote
+pip2 install django
+pip2 install bs4

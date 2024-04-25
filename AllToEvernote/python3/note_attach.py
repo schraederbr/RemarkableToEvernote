@@ -154,13 +154,14 @@ def main():
     
     notes = get_notes_with_title(access_token, note_store, formatted_date)
     # If note doesn't exist, create it
-    if(notes != None and len(notes) == 0):
+    if(notes == None or len(notes) == 0):
         print("Note doesn't exist. Creating it now")
         note = Note()
         note.title = formatted_date
         note.content = '<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note></en-note>'
         note = note_store.createNote(note)
-
+    else:
+        note = notes[0]
 
     
     print("Attaching to note titled: " + note.title)
